@@ -1,0 +1,5 @@
+.DS_Store
+/src/pipeline/__pycache__
+/src/descriptors/__pycache__
+/.ipynb_checkpoints
+Untitled.ipynb
