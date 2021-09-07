@@ -1,10 +1,10 @@
-from .trainer import Trainer
+from trainer import Trainer
 from sklearn.metrics import log_loss
-from .utils import root_mean_squared_error
+from utils import root_mean_squared_error
 from sklearn.model_selection import StratifiedKFold, KFold
 from xgboost import XGBRegressor, XGBClassifier
 from lightgbm import LGBMRegressor, LGBMClassifier
-from .neuralnetwork import NNRegressor, NNClassifier
+from neuralnetwork import NNRegressor, NNClassifier
 import numpy as np
 import optuna
 
@@ -19,14 +19,14 @@ class Objective:
     study.optimize(obj, n_trials=10, n_jobs=-1)
     '''
 
-    def __init__(self, model, x, y):
+    def __init__(self, model, x, y, n_splits, early_stopping_rounds, random_state):
         self.model = model
         self.model_type = type(self.model.get_model()).__name__
         self.x = x
         self.y = y
-        self.n_splits = 3
-        self.random_state = 1214
-        self.early_stopping_rounds = 20
+        self.n_splits = n_splits
+        self.random_state = random_state
+        self.early_stopping_rounds = early_stopping_rounds
     
     def __call__(self, trial):
         if 'LGBM' in self.model_type:
@@ -84,6 +84,8 @@ class Objective:
                 'batch_norm', ['before_act', 'non']),
                 'batch_size': int(trial.suggest_discrete_uniform(
                     'batch_size', 32, 128, 16)),
+                'learning_rate': 1e-5,
+                'epochs': 10000
             }
             if 'Classifier' in self.model_type:
                 clf = Trainer(NNClassifier(**self.SPACE))
