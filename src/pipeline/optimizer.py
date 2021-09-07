@@ -1,11 +1,11 @@
-from trainer import Trainer
+from .trainer import Trainer
 from sklearn.metrics import log_loss
-from utils import root_mean_squared_error
-from sklearn.model_selection import StratifiedKFold, Kfold
+from .utils import root_mean_squared_error
+from sklearn.model_selection import StratifiedKFold, KFold
+from xgboost import XGBRegressor, XGBClassifier
+from lightgbm import LGBMRegressor, LGBMClassifier
+from .neuralnetwork import NNRegressor, NNClassifier
 import numpy as np
-from lightgbm import LGBMClassifier, LGBMRegressor
-from xgboost import XGBClassifier, XGBRegressor
-from neuralnetwork import NNClassifier, NNRlassifier
 import optuna
 
 
@@ -19,18 +19,17 @@ class Objective:
     study.optimize(obj, n_trials=10, n_jobs=-1)
     '''
 
-    def __init__(self, model, x, y, task):
+    def __init__(self, model, x, y):
         self.model = model
-        self.model_type = type(self.model).__name__
+        self.model_type = type(self.model.get_model()).__name__
         self.x = x
         self.y = y
         self.n_splits = 3
         self.random_state = 1214
         self.early_stopping_rounds = 20
-        self.task = task
     
     def __call__(self, trial):
-        if self.model_type[:3] == 'LGB':
+        if 'LGBM' in self.model_type:
             self.SPACE = {
                 'num_leaves': trial.suggest_int(
                 'num_leaves', 8, 31),
@@ -49,7 +48,11 @@ class Objective:
                 'n_estimators': 1000000,
                 'random_state': 1112
             }
-        elif self.model_type[:3] == 'XGB':
+            if 'Classifier' in self.model_type:
+                clf = Trainer(LGBMClassifier(**self.SPACE))
+            elif 'Regressor' in self.model_type:
+                clf = Trainer(LGBMRegressor(**self.SPACE))
+        elif 'XGB' in self.model_type:
             self.SPACE = {
                 'subsample': trial.suggest_uniform(
                     'subsample', 0.65, 0.85),
@@ -63,7 +66,11 @@ class Objective:
                 'n_estimators': 1000000,
                 'random_state': 1112
             }
-        elif self.model_type[:2] == 'NN':
+            if 'Classifier' in self.model_type:
+                clf = Trainer(XGBClassifier(**self.SPACE))
+            elif 'Regressor' in self.model_type:
+                clf = Trainer(XGBRegressor(**self.SPACE))
+        elif 'NN' in self.model_type:
             self.SPACE = {
                 "input_dropout": trial.suggest_uniform(
                     "input_dropout", 0.01, 0.4),
@@ -77,18 +84,19 @@ class Objective:
                 'batch_norm', ['before_act', 'non']),
                 'batch_size': int(trial.suggest_discrete_uniform(
                     'batch_size', 32, 128, 16)),
-                'input_shape':self.x.shape[1]
             }
+            if 'Classifier' in self.model_type:
+                clf = Trainer(NNClassifier(**self.SPACE))
+            elif 'Regressor' in self.model_type:
+                clf = Trainer(NNRegressor(**self.SPACE))
         # cross validation
-        if self.task == 'classification':
-            cv = StratifiedKFold(n_splits=self.n_splits,
-            random_state=self.random_state, shuffle=True)
-        elif self.task == 'regression':
-            cv = KFold(n_splits=self.n_splits,
-            random_state=self.random_state, shuffle=True)
+        if 'Classifier' in self.model_type:
+            cv = StratifiedKFold(n_splits=self.n_splits, random_state=self.random_state, shuffle=True)
+        elif 'Regressor' in self.model_type:
+            cv = KFold(n_splits=self.n_splits, random_state=self.random_state, shuffle=True)
+        # validate average loss in K-Fold CV on a set of parameters.
         LOSS = []
         for tr_idx, va_idx in cv.split(self.x, self.y):
-            clf = Trainer(self.model(**self.SPACE))
             clf.fit(
                 self.x[tr_idx],
                 self.y[tr_idx],
@@ -97,92 +105,13 @@ class Objective:
                 self.early_stopping_rounds
             )
             y_pred = clf.predict(self.x[va_idx])  # best_iteration
-            if self.task == 'classification':
+            if 'Classifier' in self.model_type:
                 loss = log_loss(self.y[va_idx], y_pred)
-            elif self.task == 'regression':
+            elif 'Regressor' in self.model_type:
                 loss = root_mean_squared_error(self.y[va_idx], y_pred)
             LOSS.append(loss)
+        return np.mean(LOSS)
 
-        #     # cross validation
-        #     skf = StratifiedKFold(n_splits=self.n_splits,
-        #     random_state=self.random_state, shuffle=True)
-        #     LOGLOSS = []
-        #     for tr_idx, va_idx in skf.split(self.x, self.y):
-        #         clf = Trainer(LGBMClassifier(**self.PARAMS))
-        #         clf.fit(
-        #             self.x[tr_idx],
-        #             self.y[tr_idx],
-        #             self.x[va_idx],
-        #             self.y[va_idx],
-        #             self.early_stopping_rounds
-        #         )
-        #         y_pred = clf.predict_proba(self.x[va_idx])  # best_iteration
-        #         logloss = log_loss(self.y[va_idx], y_pred)
-        #         LOGLOSS.append(logloss)
-        #     return np.mean(LOGLOSS)
-        # elif self.model_type == 'XGBClassifier':
-        #     SPACE = {
-        #         'subsample': trial.suggest_uniform(
-        #             'subsample', 0.65, 0.85),
-        #         'colsample_bytree': trial.suggest_uniform(
-        #             'colsample_bytree', 0.65, 0.80),
-        #         'gamma': trial.suggest_loguniform(
-        #             'gamma', 1e-8, 1.0),
-        #         'min_child_weight': trial.suggest_loguniform(
-        #             'min_child_weight', 1, 32)
-        #     }
-        #     self.PARAMS.update(SPACE)
-        #     # cross validation
-        #     skf = StratifiedKFold(n_splits=self.n_splits,
-        #     random_state=self.random_state, shuffle=True)
-        #     LOGLOSS = []
-        #     for tr_idx, va_idx in skf.split(self.x, self.y):
-        #         clf = Trainer(XGBClassifier(**self.PARAMS))
-        #         clf.fit(
-        #             self.x[tr_idx],
-        #             self.y[tr_idx],
-        #             self.x[va_idx],
-        #             self.y[va_idx],
-        #             self.early_stopping_rounds
-        #         )
-        #         y_pred = clf.predict_proba(self.x[va_idx])  # best_iteration
-        #         logloss = log_loss(self.y[va_idx], y_pred)
-        #         LOGLOSS.append(logloss)
-        #     return np.mean(LOGLOSS)
-        # elif self.model_type == 'NNClassifier':
-        #     self.PARAMS['input_shape'] = self.x.shape[1]
-        #     SPACE = {
-        #         "input_dropout": trial.suggest_uniform(
-        #             "input_dropout", 0.2, 1.0),
-        #         "hidden_layers": trial.suggest_int(
-        #             "hidden_layers", 1, 2),
-        #         'hidden_units': int(trial.suggest_discrete_uniform(
-        #             'hidden_units', 8, 64, 8)),
-        #         'hidden_dropout': trial.suggest_uniform(
-        #             'hidden_dropout', 0.2, 1.0),
-        #         'batch_norm': trial.suggest_categorical(
-        #         'batch_norm', ['before_act', 'non']),
-        #         'batch_size': int(trial.suggest_discrete_uniform(
-        #             'batch_size', 16, 64, 16))
-        #     }
-        #     self.PARAMS.update(SPACE)
-        #     # cross validation
-        #     skf = StratifiedKFold(n_splits=self.n_splits,
-        #     random_state=self.random_state, shuffle=True)
-        #     LOGLOSS = []
-        #     for tr_idx, va_idx in skf.split(self.x, self.y):
-        #         clf = Trainer(NNClassifier(**self.PARAMS))
-        #         clf.fit(
-        #             self.x[tr_idx],
-        #             self.y[tr_idx],
-        #             self.x[va_idx],
-        #             self.y[va_idx],
-        #             self.early_stopping_rounds
-        #         )
-        #         y_pred = clf.predict_proba(self.x[va_idx])
-        #         logloss = log_loss(self.y[va_idx], y_pred) # best weghts
-        #         LOGLOSS.append(logloss)
-        #     return np.mean(LOGLOSS)
             
 def optuna_search(obj, n_trials, n_jobs, random_state):
     study = optuna.create_study(

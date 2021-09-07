@@ -4,7 +4,6 @@ import seaborn as sns
 
 
 class Trainer:
-
     '''
     # Usage
     n_splits = 3
@@ -12,7 +11,7 @@ class Trainer:
     early_stopping_rounds=10
     kf = KFold(n_splits=n_splits, random_state=random_state, shuffle=True)
     for tr_idx, va_idx in kf.split(X, y):
-        model = Trainer(XGBRegressor(**XGB_PARAMS), "classification")
+        model = Trainer(XGBRegressor(**XGB_PARAMS))
         model.fit(
             X[tr_idx],
             y[tr_idx],
@@ -22,28 +21,24 @@ class Trainer:
         )
         model.get_learning_curve()
     '''
-
-    def __init__(self, model, task):
+    def __init__(self, model):
         self.model = model
         self.model_type = type(model).__name__
-        self.task = task
         self.best_iteration = 100
         self.train_rmse = []
         self.valid_rmse = []
-        self.importance = []
 
-    
     def fit(self,
             X_train, y_train, X_valid, y_valid,
             early_stopping_rounds):
 
         eval_set = [(X_train, y_train), (X_valid, y_valid)]
 
-        if self.model_type[:3] == "LGB":
-            if self.task == 'classification':
+        if 'LGBM' in self.model_type:
+            if 'Classifier' in self.model_type:
                 eval_metric = 'logloss'
                 monitoring_loss = 'binary_logloss'
-            elif self.task == 'regression':
+            elif 'Regressor' in self.model_type:
                 eval_metric = 'rmse'
                 monitoring_loss = 'rmse'
             self.model.fit(
@@ -59,11 +54,11 @@ class Trainer:
                 self.model.evals_result_['training'][monitoring_loss])
             self.valid_logloss = np.array(
                 self.model.evals_result_['valid_1'][monitoring_loss])
-        
-        elif self.model_type[:3] == 'XGB':
-            if self.task == 'classification':
+   
+        elif 'XGB' in self.model_type:
+            if 'Classifier' in self.model_type:
                 eval_metric = 'logloss'
-            elif self.task == 'regression':
+            elif 'Regressor' in self.model_type:
                 eval_metric = 'rmse'
             self.model.fit(
                 X_train,
@@ -79,10 +74,10 @@ class Trainer:
             self.valid_logloss = np.array(
                 self.model.evals_result_['validation_1'][eval_metric])
             
-        elif self.model_type[:2] == 'NN':
-            if self.task == 'classification':
+        elif 'NN' in self.model_type:
+            if 'Classifier' in self.model_type:
                 eval_metric = 'binary_crossentropy'
-            elif self.task == 'regression':
+            elif 'Regressor' in self.model_type:
                 eval_metric = 'mean_squared_error'
             self.model.fit(
                 X_train,
@@ -96,29 +91,23 @@ class Trainer:
             self.train_logloss = np.array(history.history['loss'])
             self.valid_logloss = np.array(history.history['val_loss'])
             
-
     def predict(self, X):
-        if self.model_type[:3] == "LGB":
-            if self.task == 'classification':
+        if 'LGBM' in self.model_type:
+            if 'Classifier' in self.model_type:
                 return self.model.predict_proba(X, num_iterations=self.best_iteration)[:,1]
-            elif self.task == 'regression':
+            elif 'Regressor' in self.model_type:
                 return self.model.predict(X, num_iterations=self.best_iteration)
-        elif self.model_type[:3] == "XGB":
-            if self.task == 'classification':
+        if 'XGB' in self.model_type:
+            if 'Classifier' in self.model_type:
                 return self.model.predict_proba(X, ntree_limit=self.best_iteration)[:,1]
-            elif self.task == 'regression':
+            elif 'Regressor' in self.model_type:
                 return self.model.predict(X, ntree_limit=self.best_iteration)
-        elif self.model_type[:2] == 'NN':
+        if 'NN' in self.model_type:
             return self.model.predict(X)
         
         
     def get_model(self):
-        if self.model_type[:3] == "LGB":
             return self.model
-        elif self.model_type[:3] == "XGB":
-            return self.model
-        elif self.model_type[:2] == 'NN':
-            return self.model.get_model()
 
     
     def get_best_iteration(self):
@@ -134,16 +123,16 @@ class Trainer:
         plt.title(
             'Learning_Curve ({})'.format(self.model_type), fontsize=15)
         plt.xlabel('Iterations', fontsize=15)
-        if self.task == 'classification':
+        if 'Classifier' in self.model_type:
             plt.ylabel('LogLoss', fontsize=15)
             plt.plot(width, self.train_logloss, label='train_logloss', color=palette[0])
             plt.plot(width, self.valid_logloss, label='valid_logloss', color=palette[1])
-        elif self.task == 'regression':
-            if self.model_type[:3] == "LGB" or self.model_type[:3] == "XGB":
+        elif 'Regressor' in self.model_type:
+            if 'LGBM' in self.model_type or 'XGB' in self.model_type:
                 plt.ylabel('RMSE', fontsize=15)
                 plt.plot(width, self.train_logloss, label='train_rmse', color=palette[0])
                 plt.plot(width, self.valid_logloss, label='valid_rmse', color=palette[1])
-            elif self.model_type[:2] == "NN":
+            elif 'NN' in self.model_type:
                 plt.ylabel('MSE', fontsize=15)
                 plt.plot(width, self.train_logloss, label='train_mse', color=palette[0])
                 plt.plot(width, self.valid_logloss, label='valid_mse', color=palette[1])
