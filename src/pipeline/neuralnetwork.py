@@ -86,6 +86,10 @@ class NNClassifier:
     def get_model(self):
         return self.model
 
+    def get_transformer(self):
+        if self.standardization:
+            return self.transformer
+
 
 class NNRegressor(NNClassifier):
 

@@ -48,7 +48,7 @@ if __name__ == "__main__":
     y = np.array(df.iloc[:,1])
 
     # model instantiation
-    if len(list(set(y))) <= 2:
+    if len(set(y)) <= 2:
         task = 'clf'
         if args.LGB:
             model = Trainer(LGBMClassifier())
@@ -56,7 +56,7 @@ if __name__ == "__main__":
             model = Trainer(XGBClassifier())
         elif args.NN:
             model = Trainer(NNClassifier())   
-    elif len(list(set(y))) > 2:
+    elif len(set(y)) > 2:
         task = 'reg'
         if args.LGB:
             model = Trainer(LGBMRegressor())
