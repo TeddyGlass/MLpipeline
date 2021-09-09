@@ -50,7 +50,7 @@ bash install_libraries.sh
 ```
 # Usage
 ### 1. Start new project
-In oder to start new project, run following command. 
+In order to start new project, run following command. 
 ```bash
 python start_project.py pj_sample
 ```
