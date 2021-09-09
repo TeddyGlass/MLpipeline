@@ -48,9 +48,11 @@ You can easily install required packages by running this command.
 ```bash
 bash install_libraries.sh
 ```
+<br>
+
 # Usage
 ### 1. Start new project
-In order to start new project, run following command. 
+In order to start new project, run the following command. 
 ```bash
 python start_project.py pj_sample
 ```
