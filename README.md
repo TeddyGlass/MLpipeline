@@ -10,7 +10,7 @@ This pipeline is consit of following four phases.
 Note that sample data for classification model is mutagenicity data set build by [Hansen *et al.* (2009)](https://pubs.acs.org/doi/10.1021/ci900161g), and data for regression model is [solubility data set from RDkit](https://github.com/rdkit/rdkit/tree/master/Docs/Book/data).  
 
 # Direcroty
-```
+```bash
 .
 ├── original_data
 │     └── sample
@@ -20,22 +20,21 @@ Note that sample data for classification model is mutagenicity data set build by
 │     └── sample
 │           ├──mutagenicity
 │           └──solubility
-
-
-├── figure
-├── images
-├── model
-│     ├── checkpoint_model.pth
-│     └── config.ini
-├── src
-│     ├── mol2graph.py
-│     ├── callbacks.py
-│     ├── network.py
-│     ├── integrated_gradients.py
-│     └── train.py
-├── install_packages.sh
-├── train.sh
-├── visualize.sh
+├── results
+│     ├── pjxxxx
+│     │     ├──best_params
+│     │     ├──trained_models
+│     │     └──valid_metrics
+│     ├── project_build_by_yourself # edit yourself
+│     .     ├──best_params
+│     .     ├──trained_models
+│     .     └──valid_metric 
+.     .
+.     .
+.     
+├── src # main python codes
+│     ├── descriptirs
+│     └── pipeline
 └── README.md
 ```
 
