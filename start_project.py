@@ -49,3 +49,8 @@ if __name__ == '__main__':
     path_source = os.path.join(root_source, 'settings.ini')
     path_copy = os.path.join(root_copy, 'settings.ini')
     shutil.copyfile(path_source,path_copy)
+
+    # copy pipeline shell script file
+    path_source = os.path.join(root_source, 'pipeline.sh')
+    path_copy = os.path.join(root_copy, 'pipeline.sh')
+    shutil.copyfile(path_source,path_copy)

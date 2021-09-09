@@ -1,19 +1,20 @@
-import pandas as pd
-import argparse
 from utils import smiles2descriptor
+
+import pandas as pd
+import configparser
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('path_to_csv')
-    parser.add_argument('out_dir')
-    parser.add_argument('smiles_col')
-    parser.add_argument('property_col')
-    parser.add_argument('--ignore_3D', action='store_true',
-    help='If you calculate 3D descriptors, please set to --ignore_3D.')
-    args = parser.parse_args()
 
-    df = pd.read_csv(args.path_to_csv)
+    # load config file
+    conf_file= 'settings.ini'
+    section = 'mordred_descriptirs'
+    config = configparser.ConfigParser()
+    config.read(conf_file)
+    csv_path = config.get(section, 'csv_path')
+    ignore_3D = config.getboolean(section, 'ignore_3D')
+
+    df = pd.read_csv(path_to_csv)
     smiles = df[args.smiles_col].tolist()
     df_descriptors = smiles2descriptor(smiles, args.ignore_3D)
     df_descriptors.insert(0, 'property', df[args.property_col])

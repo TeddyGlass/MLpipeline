@@ -50,7 +50,7 @@ bash install_libraries.sh
 ```
 # Usage
 ### 1. Start new project
-In oder to start new project, run following command. In this tutotial, we adopt a new project : ```pj_sample```.
+In oder to start new project, run following command. 
 ```bash
 python start_project.py pj_sample
 ```
@@ -62,12 +62,57 @@ Before starting this tutorial, please download sample data. In the directory of 
 
 ```bash
 wget -P ./original_data https://github.com/TeddyGlass/sample_data/raw/main/mutagenicity.zip
-unzip ./original_data/mutagenicity.zip
+unzip ./original_data/mutagenicity.zip　-d　./original_data/
 
 wget -P ./original_data https://github.com/TeddyGlass/sample_data/raw/main/solubility.zip
-unzip ./original_data/solubility.zip
+unzip ./original_data/solubility.zip　-d　./original_data/
 ```
 <br>
 
 ### 3. Calculate descriptors
-In the phase 1, you can calculate descriptors or binaryized finger prints according to SMILES string which is the linear representation of chemical structure. In oder to work this program, it requies **SMILES linear strings and corresponding experimental results listed as continuous or binary values, which must be stored in the CSV format with each column name**. 
+You can calculate descriptors or binaryized fingerprints according to SMILES string which is the linear representation of chemical structure. In oder to work this program, it requies **SMILES strings and corresponding experimental results listed as continuous or binary values, which must be saved in the CSV format with each column name**. Here, we demonstrate example using sample data set of solubility.  
+<br>
+
+**I.** Edit ```/src/settings.ini``` in the project directory. You must write profiles of parameter used for descriptor calculation.  
+
+```
+[mordred_descriptirs]
+csv_path = ../original_data/solubility/solubility_train.csv
+col_smiles = SMILES
+col_property = LogSOL
+ignore_3D = True
+
+[morgan_fp]
+csv_path = ../original_data/solubility/solubility_train.csv
+col_smiles = SMILES
+col_property = LogSOL
+radius = 2
+nBits = 1024
+```
+**Parameters of Mordred descriptirs**
+> * **csv_path** : Path from ```/pj_sample/src``` to CSV file which save SMILES strings and experimental results.  
+> * **col_smiles** : Column name corresponding to the SMILES string.  
+> * **col_property** : Column name corresponding to the experimental results.  
+> * **ignore_3D** : If you do not calculate 3D descriptors, set it to ```True```.
+
+**Parameters of Morgan fingerprint**
+> * **csv_path** : Path from ```/pj_sample/src``` to CSV file which save SMILES strings and experimental results.  
+> * **col_smiles** : Column name corresponding to the SMILES string.  
+> * **col_property** : Column name corresponding to the experimental results.  
+> * **radius** : Radius of the path to get the fingerprint.
+> * **nBots** : The number of dimensions in which fingerprints of substructures are encoded.
+
+**II.** Edit ```/src/pipeline.sh``` in the project directory.  
+```bash
+python ./descriptors/calc_mordred_descriptors.py $conf
+```
+
+**III.** Run the pipeline script.  
+```bash
+bash pipeline.sh
+```
+
+<br>
+
+### 4. Hyperparameter optimization
+

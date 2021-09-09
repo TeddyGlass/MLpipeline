@@ -7,7 +7,6 @@ from neuralnetwork import NNClassifier, NNRegressor
 from optimizer import optuna_search, Objective
 from trainer import Trainer
 import os
-import datetime
 import configparser
 import argparse
 
@@ -15,7 +14,7 @@ import argparse
 if __name__ == "__main__":
     # argments settings
     parser = argparse.ArgumentParser()
-    parser.add_argument('path_to_conf')
+    parser.add_argument('conf')
     parser.add_argument('--LGB', action='store_true')
     parser.add_argument('--XGB', action='store_true')
     parser.add_argument('--NN', action='store_true')
@@ -23,9 +22,8 @@ if __name__ == "__main__":
 
     # load config
     config = configparser.ConfigParser()
-    config.read(f'{args.path_to_conf}')
+    config.read(f'{args.conf}')
     # general settings
-    pj_name = config.get('general', 'pj_name')
     train_dataset = config.get('general', 'train_data')
     # optimizer settings
     early_stopping_rounds = int(config.get('optimizer', 'early_stopping_rounds'))
@@ -34,11 +32,6 @@ if __name__ == "__main__":
     n_jobs = int(config.get('optimizer', 'n_jobs'))
     random_state = int(config.get('optimizer', 'random_state'))
 
-    # directory existance
-    out_dir = os.path.join(f'../results/{pj_name}', 'best_params')
-    if os.path.exists(out_dir) == False:
-        os.makedirs(out_dir)
-    
     # dataset
     df = pd.read_csv(train_dataset)
     if args.LGB or args.XGB:
@@ -64,24 +57,26 @@ if __name__ == "__main__":
             model = Trainer(XGBRegressor())
         elif args.NN:
             model = Trainer(NNRegressor())
-    
+
     model_name = type(model.get_model()).__name__
     print('-'*100)
     print(f'Start {model_name} parameters optimization')
     obj = Objective(
         model,
         X,
-        y, 
+        y,
         n_splits,
-        early_stopping_rounds, 
+        early_stopping_rounds,
         random_state
         )
-    
+
     best_params = optuna_search(obj, n_trials, n_jobs, random_state)
     print(f'Best_params {type(model.get_model()).__name__}: ', best_params)
     print('-'*100)
 
-    dt_now = datetime.datetime.now()
-    out_file = os.path.join(out_dir, f'{model_name}_bestparams_{dt_now}.pkl')
-    with open(out_file,'wb') as f:
-        pickle.dump(best_params ,f)
+    out_root = '../results/best_params'
+    out_file = f'{model_name}_bestparams.pkl'
+    out_path = os.path.join(out_root, out_file)
+    with open(out_path, 'wb') as f:
+        pickle.dump(best_params, f)
+

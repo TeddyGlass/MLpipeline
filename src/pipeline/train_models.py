@@ -10,7 +10,6 @@ import numpy as np
 import pandas as pd
 import pickle
 import os
-import datetime
 import configparser
 import argparse
 
@@ -31,19 +30,10 @@ if __name__ == "__main__":
     config.read(f'{args.path_to_conf}')
 
     # general settings
-    pj_name = config.get('general', 'pj_name')
     train_dataset = config.get('general', 'train_data')
-    n_splits = int(config.get('general', 'n_splits_train'))
-    early_stopping_rounds = int(config.get('general', 'early_stopping_rounds'))
-    random_state = int(config.get('general', 'random_state'))
-
-    # out directory existance
-    out_dirs = []
-    for dir in ['trained_models', 'valid_metrics']:
-        out_dir = os.path.join(f'../results/{pj_name}', dir)
-        if os.path.exists(out_dir) == False:
-            os.makedirs(out_dir)
-        out_dirs.append(out_dir)
+    n_splits = int(config.get('trainer', 'n_splits'))
+    early_stopping_rounds = int(config.get('trainer', 'early_stopping_rounds'))
+    random_state = int(config.get('trainer', 'random_state'))
 
     # dataset
     df = pd.read_csv(train_dataset)
@@ -66,7 +56,6 @@ if __name__ == "__main__":
         cv = KFold(n_splits=n_splits, random_state=random_state, shuffle=True)
 
     # cross validation
-    now = datetime.datetime.now()
     METRICS = []
     for i, (tr_idx, va_idx) in enumerate(cv.split(X, y)):
         if args.LGB:
@@ -135,15 +124,17 @@ if __name__ == "__main__":
         print(metrics)
         print('-'*100)
         # saving learning curve
+        out_root = '../results/valid_metrics'
         model.get_learning_curve(
-            os.path.join(out_dirs[1], f'{model_name}_{i}_learning_curve.png')
+            os.path.join(out_root, f'{model_name}_{i}_learning_curve.png')
             )
         # saving model
         model = model.get_model()
+        out_root = '../results/trained_models'
         if args.LGB or args.XGB: # LGB model or XGB model
             out_name = os.path.join(
-                out_dirs[0],
-                f'{model_name}_{i}_trainedmodel_{now}.pkl'
+                out_root,
+                f'{model_name}_{i}_trainedmodel.pkl'
                 )
             with open(out_name, 'wb') as f:
                 pickle.dump(model, f)
@@ -153,21 +144,21 @@ if __name__ == "__main__":
             if params['standardization']:
                 transformer = model.get_transformer()
                 out_file = os.path.join(
-                    out_dirs[0],
-                    f'{model_name}_{i}_transformer_{now}.pkl'
+                    out_root,
+                    f'{model_name}_{i}_transformer.pkl'
                     )
                 with open(out_file, 'wb') as f:
                     pickle.dump(transformer, f)
             # saving weight
             weight_name = os.path.join(
-                out_dirs[0],
-                f'{model_name}_{i}_trainedweight_{now}.h5'
+                out_root,
+                f'{model_name}_{i}_trainedweight.h5'
                 )
             model.model.save(weight_name)
             # saving model architecture
             archit_name = os.path.join(
-                out_dirs[0],
-                f'{model_name}_architecture_{now}.json'
+                out_root,
+                f'{model_name}_architecture.json'
                 )
             json_string = model.model.to_json()
             with open(archit_name, 'w') as f:
@@ -175,6 +166,7 @@ if __name__ == "__main__":
             del model
 
     # saving metrics
-    out_neme = os.path.join(out_dirs[1], f'{model_name}_metrics.csv')
+    out_root = '../results/valid_metrics'
+    out_neme = os.path.join(out_root, f'{model_name}_metrics.csv')
     df_METRICS = pd.concat(METRICS)
     df_METRICS.to_csv(out_neme)

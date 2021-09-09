@@ -1,24 +1,41 @@
-import pandas as pd
-import argparse
 from utils import smiles2descriptor
+
+import os
+import pandas as pd
+import configparser
+import argparse
 
 
 if __name__ == '__main__':
+
+    # argments
     parser = argparse.ArgumentParser()
-    parser.add_argument('path_to_csv')
-    parser.add_argument('out_dir')
-    parser.add_argument('smiles_col')
-    parser.add_argument('property_col')
-    parser.add_argument('--ignore_3D', action='store_true',
-    help='If you calculate 3D descriptors, please set to --ignore_3D.')
+    parser.add_argument('conf')
     args = parser.parse_args()
 
-    df = pd.read_csv(args.path_to_csv)
-    smiles = df[args.smiles_col].tolist()
-    df_descriptors = smiles2descriptor(smiles, args.ignore_3D)
-    df_descriptors.insert(0, 'property', df[args.property_col])
+    # load config file
+    conf_file = args.conf
+    section = 'mordred_descriptirs'
+    config = configparser.ConfigParser()
+    config.read(conf_file)
+    csv_path = config.get(section, 'csv_path')
+    ignore_3D = config.getboolean(section, 'ignore_3D')
+    col_smiles = config.get(section, 'col_smiles')
+    col_property = config.get(section, 'col_property')
+
+    df = pd.read_csv(csv_path)
+    smiles = df[col_smiles].tolist()
+    df_descriptors = smiles2descriptor(smiles, ignore_3D)
+    df_descriptors.insert(0, 'property', df[col_property])
     df_descriptors.insert(0, 'SMILES', smiles)
 
-    out_path = f'{args.out_dir}/' + args.path_to_csv.split('/')[-1].split('.csv')[0] \
-        + '_mordred' + f'_ignore3D({args.ignore_3D}).csv'
+    out_root = '../processed_data'
+    if ignore_3D:
+        file_name = csv_path.split('/')[-1].split('.csv')[0] \
+            + '_mordred_ignore_3D.csv'
+    else:
+        file_name = csv_path.split('/')[-1].split('.csv')[0] \
+            + '_mordred.csv'
+    out_path = os.path.join(out_root, file_name)
     df_descriptors.to_csv(out_path, index=False)
+    print(f'Result file was stored in "{out_path}".')
