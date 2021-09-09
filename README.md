@@ -69,7 +69,6 @@ unzip ./original_data/mutagenicity.zip　-d　./original_data/
 wget -P ./original_data https://github.com/TeddyGlass/sample_data/raw/main/solubility.zip
 unzip ./original_data/solubility.zip　-d　./original_data/
 ```
-<br>
 
 ### 3. Calculate descriptors
 You can calculate descriptors and binaryized fingerprints according to SMILES string which is the linear representation of chemical structure. Before running this program, it requies **SMILES strings and corresponding experimental results listed as continuous or binary values which are saved in the CSV format with each column name**. Here, we demonstrate example using sample data of solubility CSV file which have already downloaded.  
