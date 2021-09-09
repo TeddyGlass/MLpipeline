@@ -227,7 +227,7 @@ It is possible to train ML models with or without optimal hyper parameters. If y
 <br>
 
 **Parameters of nn_params**
-> * **standardization**: If ```True```, features used for the inputs will be converted to normal distributions forcibly.  
+> * **standardization**: If ```True```, features used for the inputs will be forcibly converted to normal distributions.  
 > * **learning_rate**:  Details are available in the description of ```learning_rate``` of [keras documentation](https://keras.io/ja/).  
 > * **epochs**: Details are available in the description of ```epochs``` of [keras documentation](https://keras.io/ja/).  
 > * **hidden_units**: Number of units (dimensions) of hidden layers. Details are available in the description of ```units``` of [keras documentation](https://keras.io/ja/).  
