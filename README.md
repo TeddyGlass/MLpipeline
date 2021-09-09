@@ -16,7 +16,7 @@ Note that sample data for classification model is mutagenicity data set build by
 │     └── sample # sample data set from Hansen et al. and RDkit
 │           ├──mutagenicity
 │           └──solubility
-├── processed_data # calculated descriptors data sets
+├── processed_data # descriptor-calculated data sets
 │     └── sample
 │           ├──mutagenicity
 │           └──solubility
