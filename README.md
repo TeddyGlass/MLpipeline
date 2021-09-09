@@ -210,12 +210,30 @@ It is possible to train ML models with or without optimal hyper parameters. If y
 <br>
 
 **Parameters of trainer**: These are parameters related to training process.
- > * **random_state** : Random seed used in the cross validation.  
+> * **random_state** : Random seed used in the cross validation.  
 > * **n_splits** : Number of folds of cross validation.  
 > * **early_stopping_rounds** : The model will train until the validation score stops improving. Validation score needs to improve at least every ```early_stopping_rounds``` round(s) to continue training.  
 
 <br>
 
-**Parameters of lgb_params**: Almost all parameter names corresond to the documentation of lightgbm. Details of othe parameter is available in the [documentation of lightgbm](https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMClassifier.html).
- > * **best_prams_path** : Path from ```/pj_sample/src``` to the ```.pkl``` extension file that records the best parameters.  
+**Parameters of lgb_params**: Almost all parameter names corresond to the documentation of lightgbm. Details of othe parameter is available in the [documentation of lightgbm](https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMRegressor.html).
+> * **best_prams_path** : Path from ```/pj_sample/src``` to the ```.pkl``` extension file that records the best parameters.  
 
+<br>
+
+**Parameters of xgb_params**: Almost all parameter names corresond to the documentation of xgboost. Details of othe parameter is available in the [documentation of xgboost](https://xgboost.readthedocs.io/en/latest/python/python_api.html#module-xgboost.sklearn).
+> * **best_prams_path** : Path from ```/pj_sample/src``` to the ```.pkl``` extension file that records the best parameters.
+
+<br>
+
+**Parameters of nn_params**
+> * **standardization**: If ```True```, values of features used for input will be converted to a normal distribution forcibly.  
+> * **learning_rate**:  Details are available in the description of ```learning_rate``` of [keras documentation](https://keras.io/ja/).  
+> * **epochs**: Details are available in the description of ```epochs``` of [keras documentation](https://keras.io/ja/).  
+> * **hidden_units**: Number of units (dimensions) of hidden layers. Details are available in the description of ```units``` of [keras documentation](https://keras.io/ja/).  
+> * **batch_size**: Details are available in the description of ```batch_size``` of [keras documentation](https://keras.io/ja/).  
+> * **input_dropout**: Drop out rate [0.0-1.0] of the input layer.  
+> * **hidden_dropout**: Drop out rate [0.0-1.0] of the hidden layer.
+> * **hidden_layers**: Number of hidden layers.  
+> * **before_act**: If ```before_act```, batch normalization is conducted before activation by activation function.  If you not adopt  batch normalization, please set it to ```None```. 
+> * **best_prams_path** : Path from ```/pj_sample/src``` to the ```.pkl``` extension file that records the best parameters.
