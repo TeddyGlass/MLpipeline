@@ -34,17 +34,19 @@ Note that sample data for classification model is mutagenicity data set build by
 ├── src # main python codes
 │     ├── descriptirs
 │     └── pipeline
+├── install_libraries.sh
 └── README.md
 ```
 # Installation of packages
-You can easily install required libraries by running this command in the ```root``` directory.  
+Creating a new environment.  
+```
+conda create -n stkQSAR python=3.8.5 -y
+conda activate stkQSAR
+```
+You can easily install required libraries by running this command.  
 ```bash
 bash install_libraries.sh
 ```
-
-<br>
-
 # Usage
 ### Phase 1
-In the phase 1, you can calculate descriptors or binaryized finger prints according to SMILES string which is the linear representation of chemical structure.  
-In oder to work this program, 
+In the phase 1, you can calculate descriptors or binaryized finger prints according to SMILES string which is the linear representation of chemical structure. In oder to work this program, it requies **SMILES linear strings and corresponding experimental results listed as continuous or binary values, which must be stored in the CSV format with each column name**. 
