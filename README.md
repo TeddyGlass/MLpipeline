@@ -1,13 +1,14 @@
 # MLpipeline *-This repository is under development-*
-This repository is a pipeline API to create machine learning (ML) models for Quantitative Structure-Activity Relationships (QSAR) and integtate them into a stacking model. It supports three ML algorithms (LGB: LightGBM, XGB: XGBoost, and NN: Neurak Network) and two types of input features (Mordred descriptors and Morgan fingerprint).  
+This repository is a framework to create machine learning (ML) models for Quantitative Structure-Activity Relationships (QSAR) and integtate them into a stacking model. It supports three ML algorithms (LGB: LightGBM, XGB: XGBoost, and NN: Neurak Network) and two types of input features (Mordred descriptors and Morgan fingerprint).  
 
-This pipeline is consit of following four components.  
+This pipeline is consit of following five components.  
 1. Calculation of descriptors  
 2. Optimization of hyper parameters  
 3. Learning of individual ML models   
 4. Creation of a stacking model  
+5. Feature analysis  
 
-Note that sample data for classification model is mutagenicity data set build by [Hansen *et al.* (2009)](https://pubs.acs.org/doi/10.1021/ci900161g), and data for regression model is [solubility data set from RDkit](https://github.com/rdkit/rdkit/tree/master/Docs/Book/data).  
+In this tutorial, we adopt sample data set of mutagenicity  build by [Hansen *et al.* (2009)](https://pubs.acs.org/doi/10.1021/ci900161g) to create classification models, and data set of [solubility data set from RDkit](https://github.com/rdkit/rdkit/tree/master/Docs/Book/data) to create regression model.  
 # Direcroty
 ```bash
 .
@@ -43,10 +44,24 @@ Creating a new environment.
 conda create -n stkQSAR python=3.8.5 -y
 conda activate stkQSAR
 ```
-You can easily install required libraries by running this command.  
+You can easily install required packages by running this command.  
 ```bash
 bash install_libraries.sh
 ```
 # Usage
-### Phase 1
+### 1. Start new project
+In oder to start new project, run following command. In this tutotial, we adopt a new project : ```pj_sample```.
+```bash
+python start_project.py pj_sample
+```
+Running this command will generate unique project directory in the root directory, which contains programs to create stacking QSAR model.
+
+### 2. Download sample data
+Before starting the tutorial, please download sample data.  
+```
+
+```
+<br>
+
+### 3. Calculate descriptors
 In the phase 1, you can calculate descriptors or binaryized finger prints according to SMILES string which is the linear representation of chemical structure. In oder to work this program, it requies **SMILES linear strings and corresponding experimental results listed as continuous or binary values, which must be stored in the CSV format with each column name**. 
