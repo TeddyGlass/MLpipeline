@@ -13,10 +13,10 @@ Note that sample data for classification model is mutagenicity data set build by
 ```bash
 .
 ├── original_data
-│     └── sample # sample dataset from Hansen et al. and RDkit
+│     └── sample # sample data set from Hansen et al. and RDkit
 │           ├──mutagenicity
 │           └──solubility
-├── processed_data # calculated descriptors datasets
+├── processed_data # calculated descriptors data sets
 │     └── sample
 │           ├──mutagenicity
 │           └──solubility
