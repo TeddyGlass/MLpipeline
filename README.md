@@ -1,6 +1,6 @@
 # MLpipeline
 
-## *Notice: This repository is under development*
+### *Notice: This repository is under development*
 This repository is a pipeline API to create machine learning (ML) models for Quantitative Structure-Activity Relationships (QSAR) and integtate them into a stacking model. It supports three ML algorithms (LGB: LightGBM, XGB: XGBoost, and NN: Neurak Network) and two types of input features (Mordred descriptors and Morgan fingerprint).  
 
 This pipeline is consit of following four phases.  
