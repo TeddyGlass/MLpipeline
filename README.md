@@ -5,7 +5,7 @@ This pipeline is consit of following four phases.
 1. Calculation of descriptors  
 2. Optimization of hyper parameters  
 3. Learning of individual ML models   
-4. Creation of a tacking model  
+4. Creation of a stacking model  
 
 Sample data for classification model is mutagenicity data set build by [Hansen *et al* (2009)](https://pubs.acs.org/doi/10.1021/ci900161g)., and data for regression model is [solubility data set from RDkit](https://github.com/rdkit/rdkit/tree/master/Docs/Book/data).  
 
