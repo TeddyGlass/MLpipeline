@@ -50,7 +50,7 @@ bash install_libraries.sh
 ```
 <br>
 
-# Usage
+# Tutorials
 ### 1. Start new project
 In order to start new project, run the following command. 
 ```bash
