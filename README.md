@@ -9,7 +9,6 @@ This pipeline is consit of following four phases.
 2. Optimization of hyper parameters  
 3. Learning of individual ML models   
 4. Creation of a tacking model  
-<br>
 
 # Requirements
 <br>
