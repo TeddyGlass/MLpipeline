@@ -209,7 +209,7 @@ It is possible to train ML models with or without optimal hyper parameters. If y
 
 <br>
 
-**Parameters of trainer**: These are parameters related to training process.
+**Parameters of trainer**: These parameters are related to training process.
 > * **random_state** : Random seed used in the cross validation.  
 > * **n_splits** : Number of folds of cross validation.  
 > * **early_stopping_rounds** : The model will train until the validation score stops improving. Validation score needs to improve at least every ```early_stopping_rounds``` round(s) to continue training.  
