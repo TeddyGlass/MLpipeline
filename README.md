@@ -11,7 +11,7 @@ This pipeline is consit of following four phases.
 4. Creation of a tacking model  
 <br>
 
-# Required environment and libraries
+# Requirements
 <br>
 
 * conda  
