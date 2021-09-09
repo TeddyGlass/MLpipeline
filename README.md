@@ -8,7 +8,7 @@ This pipeline is consit of following five components.
 4. Creation of a stacking model  
 5. Feature analysis  
 
-In this tutorial, we adopt sample data set of mutagenicity  build by [Hansen *et al.* (2009)](https://pubs.acs.org/doi/10.1021/ci900161g) to create classification models, and data set of [solubility data set from RDkit](https://github.com/rdkit/rdkit/tree/master/Docs/Book/data) to create regression model.  
+In this tutorial, we adopt sample data of mutagenicity  build by [Hansen *et al.* (2009)](https://pubs.acs.org/doi/10.1021/ci900161g) to create classification models, and data of [solubility data set from RDkit](https://github.com/rdkit/rdkit/tree/master/Docs/Book/data) to create regression model.  
 # Direcroty
 ```bash
 .
@@ -54,11 +54,11 @@ In oder to start new project, run following command.
 ```bash
 python start_project.py pj_sample
 ```
-Running this command will generate unique project directory in the root directory, which contains programs to create stacking QSAR model. After creating sample project, please move to the project directory.  
+Running this command will generate unique project directory in the root directory, which contains programs to create stacking QSAR model. After creating directory of sample project, you will need to move to the project directory. Note that almost all parameters related to building QSAR models are centrally managed by ```settings.ini``` in the project directory.  
 <br>
 
 ### 2. Download sample data
-Before starting this tutorial, please download sample data. In the directory of ```pj_sample```, run following command.
+Before starting this tutorial, please download sample data. In the directory of ```pj_sample```, please run the following commands.
 
 ```bash
 wget -P ./original_data https://github.com/TeddyGlass/sample_data/raw/main/mutagenicity.zip
@@ -70,10 +70,10 @@ unzip ./original_data/solubility.zip　-d　./original_data/
 <br>
 
 ### 3. Calculate descriptors
-You can calculate descriptors or binaryized fingerprints according to SMILES string which is the linear representation of chemical structure. In oder to work this program, it requies **SMILES strings and corresponding experimental results listed as continuous or binary values, which must be saved in the CSV format with each column name**. Here, we demonstrate example using sample data set of solubility.  
+You can calculate descriptors and binaryized fingerprints according to SMILES string which is the linear representation of chemical structure. Before running this program, it requies **SMILES strings and corresponding experimental results listed as continuous or binary values which are saved in the CSV format with each column name**. Here, we demonstrate example using sample data of solubility CSV file which have already downloaded.  
 <br>
 
-**I.**  Change the directory from ```pj_sample``` to ```pj_sample/src```, edit ```ettings.ini``` in the project directory. You must write profiles of parameters used for descriptor calculation.  
+**I.**  Change the directory from ```/pj_sample``` to ```/pj_sample/src```, edit ```settings.ini```. You must write parameters used for calculation of descriptors.  
 
 ```ini
 [mordred_descriptirs]
@@ -112,7 +112,7 @@ python ./descriptors/calc_mordred_descriptors.py $conf
 <br>
 
 ### 4. Hyperparameter optimization
-You can conduct searching for optimal hyper parameters with K-fold crass validation.  
+You can conduct searching for optimal hyper parameters with K-fold crass validation using bayesian optimization.  
 
 **I.** Edit ```/src/settings.ini``` in the project directory as following. Before runing the hyper parameter optimization, you must write parameters used.  
 ```ini
@@ -141,5 +141,79 @@ early_stopping_rounds = 10
 ```bash
 conf=settings.ini
 python ./pipeline/hyperparameters_optimization.py $conf --LGB
+python ./pipeline/hyperparameters_optimization.py $conf --XGB
+python ./pipeline/hyperparameters_optimization.py $conf --NN
 ```
+After the hyperparameter optimization is complete, ```.pkl``` extension file that records optimal hyper parameters will be saved in ```/pj_sample/results/best_params/```.
+
 <br>
+
+### 5. Training of individual ML models
+To train ML models, we need to set up baseline hyperparameters.  
+
+**I.** Edit ```/src/settings.ini``` as following.
+```ini
+[general]
+train_data = ../processed_data/solubility_train_mordred_ignore_3D.csv
+
+[trainer]
+random_state = 1234
+n_splits = 3
+early_stopping_rounds = 10
+
+[lgb_params]
+learning_rate = 1e-3
+n_estimators = 1000000
+max_depth = -1
+num_leaves = 31
+subsample = 0.65
+colsample_bytree = 0.65
+bagging_freq = 10
+min_child_weight = 10
+min_child_samples = 10
+min_split_gain = 0.01
+n_jobs = -1
+best_prams_path = ../results/best_params/LGBMRegressor_bestparams.pkl
+
+[xgb_params]
+learning_rate = 1e-3
+n_estimators = 1000000
+max_depth = 9
+subsample = 0.65
+colsample_bytree = 0.65
+gamma = 1
+min_child_weight = 10
+n_jobs = -1
+best_prams_path = ../results/best_params/XGBRegressor_bestparams.pkl
+
+[nn_params]
+standardization = True
+learning_rate = 1e-3
+epochs = 100000
+hidden_units = 256
+batch_size = 32
+input_dropout = 0.1
+hidden_dropout = 0.1
+hidden_layers = 2
+batch_norm = before_act
+best_prams_path = ../results/best_params/NNRegressor_bestparams.pkl
+``` 
+It is possible to train ML models with or without optimal hyper parameters. If you train without optimal hyperparameters, baseline hyperparameters are adopted. If you train with optimal hyperparameters, baseline hyperparameters will be overwritten by optimal hyperparameters.  
+
+<br>
+
+**Parameters of general settings**  
+> * **train_data** : Path from ```/pj_sample/src``` to CSV file which saves calculated descriptors and experimental results. 
+
+<br>
+
+**Parameters of trainer**: These are parameters related to training process.
+ > * **random_state** : Random seed used in the cross validation.  
+> * **n_splits** : Number of folds of cross validation.  
+> * **early_stopping_rounds** : The model will train until the validation score stops improving. Validation score needs to improve at least every ```early_stopping_rounds``` round(s) to continue training.  
+
+<br>
+
+**Parameters of lgb_params**: Almost all parameter names corresond to the documentation of lightgbm. Details of othe parameter is available in the [documentation of lightgbm](https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMClassifier.html).
+ > * **best_prams_path** : Path from ```/pj_sample/src``` to the ```.pkl``` extension file that records the best parameters.  
+
