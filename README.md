@@ -73,9 +73,9 @@ unzip ./original_data/solubility.zip　-d　./original_data/
 You can calculate descriptors or binaryized fingerprints according to SMILES string which is the linear representation of chemical structure. In oder to work this program, it requies **SMILES strings and corresponding experimental results listed as continuous or binary values, which must be saved in the CSV format with each column name**. Here, we demonstrate example using sample data set of solubility.  
 <br>
 
-**I.** Edit ```/src/settings.ini``` in the project directory. You must write profiles of parameter used for descriptor calculation.  
+**I.**  Change the directory from ```pj_sample``` to ```pj_sample/src```, edit ```ettings.ini``` in the project directory. You must write profiles of parameters used for descriptor calculation.  
 
-```
+```ini
 [mordred_descriptirs]
 csv_path = ../original_data/solubility/solubility_train.csv
 col_smiles = SMILES
@@ -96,23 +96,50 @@ nBits = 1024
 > * **ignore_3D** : If you do not calculate 3D descriptors, set it to ```True```.
 
 **Parameters of Morgan fingerprint**
-> * **csv_path** : Path from ```/pj_sample/src``` to CSV file which save SMILES strings and experimental results.  
+> * **csv_path** : Path from ```/pj_sample/src``` to CSV file which saves SMILES strings and experimental results.  
 > * **col_smiles** : Column name corresponding to the SMILES string.  
 > * **col_property** : Column name corresponding to the experimental results.  
 > * **radius** : Radius of the path to get the fingerprint.
-> * **nBots** : The number of dimensions in which fingerprints of substructures are encoded.
-
-**II.** Edit ```/src/pipeline.sh``` in the project directory.  
-```bash
-python ./descriptors/calc_mordred_descriptors.py $conf
-```
-
-**III.** Run the pipeline script.  
-```bash
-bash pipeline.sh
-```
+> * **nBots** : Number of dimensions in which fingerprints of substructures are encoded.
 
 <br>
 
-### 4. Hyperparameter optimization
+**II.** Run the python code (```calc_mordred_descriptors.py```). 
+```bash
+conf=settings.ini
+python ./descriptors/calc_mordred_descriptors.py $conf
+```
+<br>
 
+### 4. Hyperparameter optimization
+You can conduct searching for optimal hyper parameters with K-fold crass validation.  
+
+**I.** Edit ```/src/settings.ini``` in the project directory as following. Before runing the hyper parameter optimization, you must write parameters used.  
+```ini
+[general]
+train_data = ../processed_data/solubility_train_mordred_ignore_3D.csv
+
+[optimizer]
+random_state = 4321
+n_splits = 3
+n_trials = 10
+n_jobs = -1
+early_stopping_rounds = 10
+```
+**Parameters of general settings**  
+> * **train_data** : Path from ```/pj_sample/src``` to CSV file which saves calculated descriptors and experimental results.  
+
+**Parameters of hyper parameter optimization**
+ > * **random_state** : Random seed used in the cross validation of hyper parameter search.  
+> * **n_splits** : Number of folds of cross validation.  
+> * **n_jobs** : Number of threds for hyperparameter search with optuna.
+> * **early_stopping_rounds** : The model will train until the validation score stops improving. Validation score needs to improve at least every ```early_stopping_rounds``` round(s) to continue training.  
+
+<br>
+
+**II.** Run the python code (```hyperparameters_optimization.py```). When, you must set the action related to the model type selection from among ```--LGB``` or ```--XGB``` or ```--NN```.
+```bash
+conf=settings.ini
+python ./pipeline/hyperparameters_optimization.py $conf --LGB
+```
+<br>
