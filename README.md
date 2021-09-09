@@ -8,7 +8,6 @@ This pipeline is consit of following four components.
 4. Creation of a stacking model  
 
 Note that sample data for classification model is mutagenicity data set build by [Hansen *et al.* (2009)](https://pubs.acs.org/doi/10.1021/ci900161g), and data for regression model is [solubility data set from RDkit](https://github.com/rdkit/rdkit/tree/master/Docs/Book/data).  
-
 # Direcroty
 ```bash
 .
@@ -37,7 +36,6 @@ Note that sample data for classification model is mutagenicity data set build by
 │     └── pipeline
 └── README.md
 ```
-
 # Installation of packages
 You can easily install required libraries by running this command in the ```root``` directory.  
 ```bash
