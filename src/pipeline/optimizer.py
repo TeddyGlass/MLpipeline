@@ -49,9 +49,9 @@ class Objective:
                 'random_state': 1112
             }
             if 'Classifier' in self.model_type:
-                clf = Trainer(LGBMClassifier(**self.SPACE))
+                model_ = Trainer(LGBMClassifier(**self.SPACE))
             elif 'Regressor' in self.model_type:
-                clf = Trainer(LGBMRegressor(**self.SPACE))
+                model_ = Trainer(LGBMRegressor(**self.SPACE))
         elif 'XGB' in self.model_type:
             self.SPACE = {
                 'subsample': trial.suggest_uniform(
@@ -67,9 +67,9 @@ class Objective:
                 'random_state': 1112
             }
             if 'Classifier' in self.model_type:
-                clf = Trainer(XGBClassifier(**self.SPACE))
+                model_ = Trainer(XGBClassifier(**self.SPACE))
             elif 'Regressor' in self.model_type:
-                clf = Trainer(XGBRegressor(**self.SPACE))
+                model_ = Trainer(XGBRegressor(**self.SPACE))
         elif 'NN' in self.model_type:
             self.SPACE = {
                 "input_dropout": trial.suggest_uniform(
@@ -88,9 +88,9 @@ class Objective:
                 'epochs': 10000
             }
             if 'Classifier' in self.model_type:
-                clf = Trainer(NNClassifier(**self.SPACE))
+                model_ = Trainer(NNClassifier(**self.SPACE))
             elif 'Regressor' in self.model_type:
-                clf = Trainer(NNRegressor(**self.SPACE))
+                model_ = Trainer(NNRegressor(**self.SPACE))
         # cross validation
         if 'Classifier' in self.model_type:
             cv = StratifiedKFold(n_splits=self.n_splits, random_state=self.random_state, shuffle=True)
@@ -99,14 +99,14 @@ class Objective:
         # validate average loss in K-Fold CV on a set of parameters.
         LOSS = []
         for tr_idx, va_idx in cv.split(self.x, self.y):
-            clf.fit(
+            model_.fit(
                 self.x[tr_idx],
                 self.y[tr_idx],
                 self.x[va_idx],
                 self.y[va_idx],
                 self.early_stopping_rounds
             )
-            y_pred = clf.predict(self.x[va_idx])  # best_iteration
+            y_pred = model_.predict(self.x[va_idx])  # best_iteration
             if 'Classifier' in self.model_type:
                 loss = log_loss(self.y[va_idx], y_pred)
             elif 'Regressor' in self.model_type:
