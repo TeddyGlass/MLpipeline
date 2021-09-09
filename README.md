@@ -237,3 +237,14 @@ It is possible to train ML models with or without optimal hyper parameters. If y
 > * **hidden_layers**: Number of hidden layers.  
 > * **before_act**: If ```before_act```, batch normalization is conducted before activation by activation function (ReLU).  If you not adopt  batch normalization, please set it to ```None```. 
 > * **best_prams_path** : Path from ```/pj_sample/src``` to the ```.pkl``` extension file that records the best parameters.
+
+<br>
+
+**II.** Run the python code (```train_models.py```). When, you must set the action related to the model type selection from among ```--LGB``` or ```--XGB``` or ```--NN```. Moreover, if you train models with optimal hyperparameters, please set an another action: ```--use_best_params```.  
+```bash
+conf=settings.ini
+python ./pipeline/train_models.py $conf --LGB --use_best_params
+python ./pipeline/train_models.py $conf --XGB --use_best_params
+python ./pipeline/train_models.py $conf --NN --use_best_params
+```
+After the training is complete, each K kind of ```.pkl``` extension file that records trained model which was build in the K-fold CV will be saved in ```/pj_sample/results/trained_models```. In the event of keras model, ```.json``` file (one kind) which records the information of netowork architecture and ```.h5``` file (K kinds) which records the best weight will be saved in ```/pj_sample/results/trained_models```. Moreover, after training, monioted training processes (learning curves) and predictive performances of the validation sets will be saved in ```/pj_sample/results/trained_models```.
