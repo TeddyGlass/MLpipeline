@@ -235,5 +235,5 @@ It is possible to train ML models with or without optimal hyper parameters. If y
 > * **input_dropout**: Drop out rate [0.0-1.0] of the input layer.  
 > * **hidden_dropout**: Drop out rate [0.0-1.0] of the hidden layer.
 > * **hidden_layers**: Number of hidden layers.  
-> * **before_act**: If ```before_act```, batch normalization is conducted before activation by activation function.  If you not adopt  batch normalization, please set it to ```None```. 
+> * **before_act**: If ```before_act```, batch normalization is conducted before activation by activation function (ReLU).  If you not adopt  batch normalization, please set it to ```None```. 
 > * **best_prams_path** : Path from ```/pj_sample/src``` to the ```.pkl``` extension file that records the best parameters.
