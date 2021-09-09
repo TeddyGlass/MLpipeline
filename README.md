@@ -54,12 +54,18 @@ In oder to start new project, run following command. In this tutotial, we adopt 
 ```bash
 python start_project.py pj_sample
 ```
-Running this command will generate unique project directory in the root directory, which contains programs to create stacking QSAR model.
+Running this command will generate unique project directory in the root directory, which contains programs to create stacking QSAR model. After creating sample project, please move to the project directory.  
+<br>
 
 ### 2. Download sample data
-Before starting the tutorial, please download sample data.  
-```
+Before starting this tutorial, please download sample data. In the directory of ```pj_sample```, run following command.
 
+```bash
+wget -P ./original_data https://github.com/TeddyGlass/sample_data/raw/main/mutagenicity.zip
+unzip ./original_data/mutagenicity.zip
+
+wget -P ./original_data https://github.com/TeddyGlass/sample_data/raw/main/solubility.zip
+unzip ./original_data/solubility.zip
 ```
 <br>
 
