@@ -14,7 +14,7 @@ if __name__ == '__main__':
     root = f'./{args.pj_name}'
     sub_dir1 = ['original_data', 'processed_data', 'results', 'src']
     sub_dir2 = [
-        ['best_params', 'trained_models', 'valid_metrics'],
+        ['best_params', 'trained_models', 'valid_metrics', 'stk_feature', 'prediction_results', 'logging'],
         ['pipeline', 'descriptors']
         ]
     for dir1 in sub_dir1:

@@ -152,6 +152,7 @@ After the hyperparameter optimization is complete, ```.pkl``` extension file tha
 
 ### 5. Training of individual ML models
 To train ML models, we need to set up baseline hyperparameters.  
+It is possible to train ML models with or without optimal hyper parameters. If you train without optimal hyperparameters, baseline hyperparameters are adopted. If you train with optimal hyperparameters, baseline hyperparameters will be overwritten by optimal hyperparameters.  
 
 **I.** Edit ```/src/settings.ini``` as following.
 ```ini
@@ -200,7 +201,6 @@ hidden_layers = 2
 batch_norm = before_act
 best_prams_path = ../results/best_params/NNRegressor_bestparams.pkl
 ``` 
-It is possible to train ML models with or without optimal hyper parameters. If you train without optimal hyperparameters, baseline hyperparameters are adopted. If you train with optimal hyperparameters, baseline hyperparameters will be overwritten by optimal hyperparameters.  
 
 <br>
 

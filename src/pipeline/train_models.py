@@ -12,6 +12,7 @@ import pickle
 import os
 import configparser
 import argparse
+import datetime
 
 
 if __name__ == "__main__":
@@ -170,3 +171,14 @@ if __name__ == "__main__":
     out_neme = os.path.join(out_root, f'{model_name}_metrics.csv')
     df_METRICS = pd.concat(METRICS)
     df_METRICS.to_csv(out_neme)
+
+    # logging
+    out_file = '../results/logging/logging.ini'
+    config = configparser.RawConfigParser()
+    section = 'logging_trainer'
+    config.add_section(section)
+    config.set(section, 'n_splits', n_splits)
+    config.set(section, 'random_state', random_state)
+    config.set(section, 'recording_time', datetime.datetime.now())
+    with open(out_file, 'w') as f:
+        config.write(f)

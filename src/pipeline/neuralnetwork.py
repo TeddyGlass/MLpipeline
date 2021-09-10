@@ -5,7 +5,6 @@ from keras.layers.normalization import BatchNormalization
 from keras.models import Sequential
 from keras.optimizers import Adam
 from sklearn.preprocessing import QuantileTransformer
-from keras.utils import np_utils
 from keras.wrappers.scikit_learn import KerasClassifier, KerasRegressor
 
 
@@ -26,14 +25,14 @@ class NNClassifier:
                  batch_norm="before_act", learning_rate=1e-5, batch_size=64, epochs=10000,
                  standardization=True
                  ):
-        self.input_dropout = input_dropout # layer param
-        self.hidden_layers = int(hidden_layers) # layer param
-        self.hidden_units = int(hidden_units) # layer param
-        self.hidden_dropout = hidden_dropout # layer param
-        self.batch_norm = batch_norm # layer param
-        self.learning_rate = learning_rate # optimizer param
-        self.batch_size = int(batch_size) # fit param
-        self.epochs = int(epochs) # fit param
+        self.input_dropout = input_dropout  # layer param
+        self.hidden_layers = int(hidden_layers)  # layer param
+        self.hidden_units = int(hidden_units)  # layer param
+        self.hidden_dropout = hidden_dropout  # layer param
+        self.batch_norm = batch_norm  # layer param
+        self.learning_rate = learning_rate  # optimizer param
+        self.batch_size = int(batch_size)  # fit param
+        self.epochs = int(epochs)  # fit param
         self.standardization = standardization
 
     def fit(self, X_train, y_train, early_stopping_rounds, eval_set, eval_metric, verbose=1):
@@ -42,7 +41,7 @@ class NNClassifier:
             self.transformer = QuantileTransformer(n_quantiles=100, random_state=0, output_distribution='normal')
             X_train = self.transformer.fit_transform(X_train)
             X_valid = self.transformer.transform(eval_set[1][0])
-        elif self.standardization == False:
+        elif self.standardization is False:
             X_valid = eval_set[1][0]
         
         # Keras Wrapper for sklearn AIP
@@ -99,7 +98,7 @@ class NNRegressor(NNClassifier):
             self.transformer = QuantileTransformer(n_quantiles=100, random_state=0, output_distribution='normal')
             X_train = self.transformer.fit_transform(X_train)
             X_valid = self.transformer.transform(eval_set[1][0])
-        elif self.standardization == False:
+        elif self.standardization is False:
             X_valid = eval_set[1][0]
         
         # Keras Wrapper for sklearn AIP

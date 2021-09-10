@@ -10,7 +10,7 @@ import optuna
 
 
 class Objective:
-     
+
     '''
     # Usage
     obj = Objective(LGBMRegressor(), X, y)
@@ -31,8 +31,7 @@ class Objective:
     def __call__(self, trial):
         if 'LGBM' in self.model_type:
             self.SPACE = {
-                'num_leaves': trial.suggest_int(
-                'num_leaves', 8, 31),
+                'num_leaves': trial.suggest_int('num_leaves', 8, 31),
                 'subsample': trial.suggest_uniform('subsample', 0.60, 0.80),
                 'colsample_bytree': trial.suggest_uniform(
                     'colsample_bytree', 0.60, 0.80),
@@ -48,10 +47,6 @@ class Objective:
                 'n_estimators': 1000000,
                 'random_state': 1112
             }
-            if 'Classifier' in self.model_type:
-                model_ = Trainer(LGBMClassifier(**self.SPACE))
-            elif 'Regressor' in self.model_type:
-                model_ = Trainer(LGBMRegressor(**self.SPACE))
         elif 'XGB' in self.model_type:
             self.SPACE = {
                 'subsample': trial.suggest_uniform(
@@ -66,10 +61,6 @@ class Objective:
                 'n_estimators': 1000000,
                 'random_state': 1112
             }
-            if 'Classifier' in self.model_type:
-                model_ = Trainer(XGBClassifier(**self.SPACE))
-            elif 'Regressor' in self.model_type:
-                model_ = Trainer(XGBRegressor(**self.SPACE))
         elif 'NN' in self.model_type:
             self.SPACE = {
                 "input_dropout": trial.suggest_uniform(
@@ -81,16 +72,12 @@ class Objective:
                 'hidden_dropout': trial.suggest_uniform(
                     'hidden_dropout', 0.01, 0.4),
                 'batch_norm': trial.suggest_categorical(
-                'batch_norm', ['before_act', 'non']),
+                    'batch_norm', ['before_act', 'non']),
                 'batch_size': int(trial.suggest_discrete_uniform(
                     'batch_size', 32, 128, 16)),
                 'learning_rate': 1e-5,
                 'epochs': 10000
             }
-            if 'Classifier' in self.model_type:
-                model_ = Trainer(NNClassifier(**self.SPACE))
-            elif 'Regressor' in self.model_type:
-                model_ = Trainer(NNRegressor(**self.SPACE))
         # cross validation
         if 'Classifier' in self.model_type:
             cv = StratifiedKFold(n_splits=self.n_splits, random_state=self.random_state, shuffle=True)
@@ -99,6 +86,21 @@ class Objective:
         # validate average loss in K-Fold CV on a set of parameters.
         LOSS = []
         for tr_idx, va_idx in cv.split(self.x, self.y):
+            if 'LGBM' in self.model_type:
+                if 'Classifier' in self.model_type:
+                    model_ = Trainer(LGBMClassifier(**self.SPACE))
+                elif 'Regressor' in self.model_type:
+                    model_ = Trainer(LGBMRegressor(**self.SPACE))
+            elif 'XGB' in self.model_type:
+                if 'Classifier' in self.model_type:
+                    model_ = Trainer(XGBClassifier(**self.SPACE))
+                elif 'Regressor' in self.model_type:
+                    model_ = Trainer(XGBRegressor(**self.SPACE))
+            elif 'NN' in self.model_type:
+                if 'Classifier' in self.model_type:
+                    model_ = Trainer(NNClassifier(**self.SPACE))
+                elif 'Regressor' in self.model_type:
+                    model_ = Trainer(NNRegressor(**self.SPACE))
             model_.fit(
                 self.x[tr_idx],
                 self.y[tr_idx],
