@@ -46,7 +46,7 @@ conda activate stkQSAR
 ```
 You can easily install required packages by running this command.  
 ```bash
-bash install_libraries.sh
+bash install_packages.sh
 ```
 <br>
 
