@@ -1,12 +1,11 @@
 # MLpipeline
 This repository is a framework to create machine learning (ML) models for Quantitative Structure-Activity Relationships (QSAR) and integtate them into a stacking model. It supports three ML algorithms (LGB: LightGBM, XGB: XGBoost, and NN: Neurak Network) and two types of input features (Mordred descriptors and Morgan fingerprint).  
 
-This pipeline is consit of following five components.  
+This pipeline is consit of following four components.  
 1. Calculation of descriptors  
 2. Optimization of hyper parameters  
 3. Learning of individual ML models   
 4. Creation of a stacking model  
-5. Feature analysis  
 
 In this tutorial, we adopt sample data of mutagenicity  build by [Hansen *et al.* (2009)](https://pubs.acs.org/doi/10.1021/ci900161g) to create classification models, and data of [solubility data set from RDkit](https://github.com/rdkit/rdkit/tree/master/Docs/Book/data) to create regression model.  
 # Direcroty
